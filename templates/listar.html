@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar EPIs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Lista de EPIs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Quantidade</th>
+                    <th>Data de Validade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for epi in epis %}
+                    <tr>
+                        <td>{{ epi.nome }}</td>
+                        <td>{{ epi.descricao }}</td>
+                        <td>{{ epi.quantidade }}</td>
+                        <td>{{ epi.data_validade }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('index') }}">Voltar</a>
+    </div>
+</body>
+</html>
