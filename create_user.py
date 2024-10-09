@@ -1,9 +1,10 @@
-import sqlite3
+from supabase import create_client, Client
 from werkzeug.security import generate_password_hash
 
-# Conectar ao banco de dados
-conn = sqlite3.connect('almoxarifado.db')
-c = conn.cursor()
+# Configurações do Supabase
+url = "sua_url_do_supabase"
+key = "sua_chave_de_api"
+supabase: Client = create_client(url, key)
 
 # Usuário e senha a serem criados
 username = 'admin'
@@ -13,9 +14,12 @@ password = 'senha123'
 hashed_password = generate_password_hash(password)
 
 # Inserir usuário no banco de dados
-c.execute('INSERT INTO usuarios (username, password) VALUES (?, ?)', (username, hashed_password))
+response = supabase.table('usuarios').insert({
+    'username': username,
+    'password': hashed_password
+}).execute()
 
-conn.commit()
-conn.close()
-
-print(f"Usuário '{username}' criado com sucesso!")
+if response.status_code == 201:
+    print(f"Usuário '{username}' criado com sucesso!")
+else:
+    print("Erro ao criar usuário:", response.error_message)
