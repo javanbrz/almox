@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from supabase import create_client, Client
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'
 
 # Configurações do Supabase
-url = "sua_url_do_supabase"
-key = "sua_chave_de_api"
+url = "https://ieedzrwbsaetrfijiyxx.supabase.co"
+key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZWR6cndic2FldHJmaWppeXh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA0MTU0ODYsImV4cCI6MjA0NTk5MTQ4Nn0.X79qMX49prHw6rPFJqX065Gv0uGtvyU0Ci5EiehEW2w"
 supabase: Client = create_client(url, key)
 
 @app.route('/')
