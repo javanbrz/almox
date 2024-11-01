@@ -40,12 +40,12 @@
                         <td>{{ epi.nome }}</td>
                         <td>{{ epi.descricao }}</td>
                         <td>{{ epi.quantidade }}</td>
-                        <td>{{ epi.data_validade }}</td>
+                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{{ url_for('index') }}">Voltar</a>
+        <a href="{{ url_for('main.index') }}">Voltar</a>
     </div>
 </body>
 </html>
