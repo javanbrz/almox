@@ -46,9 +46,9 @@
         <h2>Bem-vindo ao Almoxarifado de EPIs</h2>
 
         <div class="buttons">
-            <a href="{{ url_for('cadastro') }}">Cadastrar EPI</a>
-            <a href="{{ url_for('listar') }}">Listar EPIs</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('main.cadastro') }}">Cadastrar EPI</a>
+            <a href="{{ url_for('main.listar') }}">Listar EPIs</a>
+            <a href="{{ url_for('main.logout') }}">Logout</a>
         </div>
 
         <h3>Lista de EPIs:</h3>
@@ -67,7 +67,7 @@
                         <td>{{ epi.nome }}</td>
                         <td>{{ epi.descricao }}</td>
                         <td>{{ epi.quantidade }}</td>
-                        <td>{{ epi.data_validade }}</td>
+                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
