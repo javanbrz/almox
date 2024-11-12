@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Saída de EPIs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="number"], input[type="date"], input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registrar Saída de EPI</h2>
+        <form method="POST">
+            <label for="epi_id">EPI:</label>
+            <select name="epi_id" id="epi_id" required>
+                {% for epi in epis %}
+                    <option value="{{ epi['id'] }}">{{ epi['nome'] }} (Estoque: {{ epi['quantidade'] }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="quantidade">Quantidade de Saída:</label>
+            <input type="number" id="quantidade" name="quantidade" min="1" required>
+
+            <label for="solicitante">Solicitante:</label>
+            <input type="text" id="solicitante" name="solicitante" required>
+
+            <label for="data_saida">Data de Saída:</label>
+            <input type="date" id="data_saida" name="data_saida" required>
+
+            <button type="submit">Registrar Saída</button>
+        </form>
+        <a href="{{ url_for('main.index') }}">Voltar</a>
+    </div>
+</body>
+</html>
