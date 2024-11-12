@@ -46,11 +46,11 @@
                                 <button type="submit" class="bt-delete">Excluir</button>
                             </form>                            
                         </td>
+                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
         <a href="{{ url_for('main.index') }}">Voltar</a>
     </div>
 </body>

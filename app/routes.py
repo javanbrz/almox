@@ -7,6 +7,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     if 'user_id' in session:
+
         # Obter as últimas movimentações
         response = current_app.supabase.table('movimentacoes').select('*').order('data_saida', desc=True).limit(5).execute()
         movimentacoes = response.data
@@ -29,7 +30,15 @@ def index():
                     mov['data_saida'] = None  # Se a data for inválida
 
         return render_template('index.html', movimentacoes=movimentacoes)
-    
+
+        response = current_app.supabase.table('epis').select('*').execute()
+        # epis = conn.execute('SELECT * FROM epis').fetchall()
+        epis = response.data
+        for epi in epis:
+        # Supondo que a data esteja no formato 'YYYY-MM-DD'
+            epi['data_validade'] = datetime.strptime(epi['data_validade'], '%Y-%m-%d')
+
+        return render_template('index.html', epis=epis)
     return redirect(url_for('main.login'))
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -190,3 +199,13 @@ def controle_saida():
         return redirect(url_for('main.listar'))
 
     return render_template('controle_saida.html', epis=epis)
+    response = current_app.supabase.table('epis').select('*').execute()
+    # epis = conn.execute('SELECT * FROM epis').fetchall()
+    epis = response.data
+    
+    for epi in epis:
+        # Supondo que a data esteja no formato 'YYYY-MM-DD'
+        epi['data_validade'] = datetime.strptime(epi['data_validade'], '%Y-%m-%d')
+
+
+    return render_template('listar.html', epis=epis)
