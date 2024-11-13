@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listar EPIs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function confirmarExclusao(event) {
+            if (!confirm("Tem certeza de que deseja excluir este EPI e todas as movimentações associadas?")) {
+                event.preventDefault();
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>Lista de EPIs</h2>
-        
+
         <!-- Caixa de seleção para ordenação -->
         <div class="ordenacao">
             <form method="get" action="{{ url_for('main.listar') }}">
@@ -36,21 +43,31 @@
                     <tr>
                         <td>{{ epi.nome }}</td>
                         <td>{{ epi.descricao }}</td>
-                        <td>{{ epi.quantidade }}</td>
-                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') if epi.data_validade else 'Data não disponível' }}</td>
+                        <td>
+                            {{ epi.quantidade }}
+                            {% if epi.aviso_estoque %}
+                                <span style="color: red; font-weight: bold;"> - Estoque Baixo!</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ epi.data_validade.strftime('%d/%m/%Y') if epi.data_validade else 'Data inválida' }}
+                            {% if epi.aviso_validade %}
+                                <span style="color: orange; font-weight: bold;"> - Próximo do Vencimento!</span>
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{{ url_for('main.editar', item_id=epi['id']) }}" class="bt-editar">Editar</a>
                         </td>
                         <td>
                             <form action="{{ url_for('main.excluir', item_id=epi['id']) }}" method="post" style="display:inline;">
-                                <button type="submit" class="bt-delete">Excluir</button>
-                            </form>                            
+                                <button type="submit" class="bt-delete" onclick="confirmarExclusao(event)">Excluir</button>
+                            </form>
                         </td>
-                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
         <a href="{{ url_for('main.index') }}">Voltar</a>
     </div>
 </body>

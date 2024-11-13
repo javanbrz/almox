@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app 
 from werkzeug.security import check_password_hash
 
@@ -7,7 +7,6 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     if 'user_id' in session:
-
         # Obter as últimas movimentações
         response = current_app.supabase.table('movimentacoes').select('*').order('data_saida', desc=True).limit(5).execute()
         movimentacoes = response.data
@@ -30,15 +29,7 @@ def index():
                     mov['data_saida'] = None  # Se a data for inválida
 
         return render_template('index.html', movimentacoes=movimentacoes)
-
-        response = current_app.supabase.table('epis').select('*').execute()
-        # epis = conn.execute('SELECT * FROM epis').fetchall()
-        epis = response.data
-        for epi in epis:
-        # Supondo que a data esteja no formato 'YYYY-MM-DD'
-            epi['data_validade'] = datetime.strptime(epi['data_validade'], '%Y-%m-%d')
-
-        return render_template('index.html', epis=epis)
+    
     return redirect(url_for('main.login'))
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -112,10 +103,19 @@ def listar():
             try:
                 epi['data_validade'] = datetime.strptime(epi['data_validade'], '%Y-%m-%d')
             except ValueError:
-                epi['data_validade'] = None  # Define como None se o formato for inválido
+                epi['data_validade'] = None  # Se a data estiver inválida
+
+        # Verificação de quantidade baixa
+        epi['aviso_estoque'] = epi.get('quantidade', 0) < 3
+
+        # Verificação de validade próxima
+        if epi['data_validade']:
+            dias_para_vencimento = (epi['data_validade'] - datetime.now()).days
+            epi['aviso_validade'] = dias_para_vencimento <= 15
+        else:
+            epi['aviso_validade'] = False
 
     return render_template('listar.html', epis=epis, ordem=ordem)
-
 
 # Função para excluir um item
 @main.route('/excluir/<int:item_id>', methods=['POST'])
@@ -123,8 +123,12 @@ def excluir(item_id):
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
 
+    # Excluir todas as movimentações associadas ao EPI antes de excluí-lo
+    current_app.supabase.table('movimentacoes').delete().eq('epi_id', item_id).execute()
+    
+    # Excluir o EPI
     current_app.supabase.table('epis').delete().eq('id', item_id).execute()
-    flash('EPI excluído com sucesso!')
+    flash('EPI e movimentações associadas excluídos com sucesso!')
     return redirect(url_for('main.listar'))
 
 # Função para editar um item
@@ -199,13 +203,58 @@ def controle_saida():
         return redirect(url_for('main.listar'))
 
     return render_template('controle_saida.html', epis=epis)
-    response = current_app.supabase.table('epis').select('*').execute()
-    # epis = conn.execute('SELECT * FROM epis').fetchall()
-    epis = response.data
+
+@main.route('/relatorio', methods=['GET'])
+def relatorio():
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+
+    # Pega os filtros dos parâmetros da URL (caso existam)
+    solicitante = request.args.get('solicitante', '')
+    epi_nome = request.args.get('epi_nome', '')
+    data_inicio = request.args.get('data_inicio', '')
+    data_fim = request.args.get('data_fim', '')
+
+    # Inicia a consulta
+    query = current_app.supabase.table('movimentacoes').select('*')
+
+    # Adiciona filtros conforme os parâmetros recebidos
+    if solicitante:
+        query = query.ilike('solicitante', f'%{solicitante}%')  # Filtro por nome do solicitante (case insensitive)
     
-    for epi in epis:
-        # Supondo que a data esteja no formato 'YYYY-MM-DD'
-        epi['data_validade'] = datetime.strptime(epi['data_validade'], '%Y-%m-%d')
+    if epi_nome:
+        # Primeiro, buscar o id dos EPIs com base no nome
+        epi_ids_response = current_app.supabase.table('epis').select('id').ilike('nome', f'%{epi_nome}%').execute()
+        epi_ids = [epi['id'] for epi in epi_ids_response.data]
+        if epi_ids:
+            query = query.in_('epi_id', epi_ids)  # Filtra movimentações com os epi_ids encontrados
 
+    if data_inicio:
+        query = query.gte('data_saida', data_inicio)  # Filtro por data de saída maior ou igual a data_inicio
+    
+    if data_fim:
+        query = query.lte('data_saida', data_fim)  # Filtro por data de saída menor ou igual a data_fim
 
-    return render_template('listar.html', epis=epis)
+    # Ordena pela data de saída
+    query = query.order('data_saida', desc=True)
+
+    # Executa a consulta
+    response = query.execute()
+    movimentacoes = response.data
+
+    # Adiciona o nome do EPI para cada movimentação
+    for mov in movimentacoes:
+        if 'epi_id' in mov:
+            epi_response = current_app.supabase.table('epis').select('nome').eq('id', mov['epi_id']).execute()
+            if epi_response.data:
+                mov['nome_epi'] = epi_response.data[0]['nome']
+            else:
+                mov['nome_epi'] = 'EPI não encontrado'
+
+        if 'data_saida' in mov:
+            try:
+                mov['data_saida'] = datetime.strptime(mov['data_saida'], '%Y-%m-%d')
+            except ValueError:
+                mov['data_saida'] = None  # Se a data for inválida
+
+    return render_template('relatorio.html', movimentacoes=movimentacoes, solicitante=solicitante, epi_nome=epi_nome, data_inicio=data_inicio, data_fim=data_fim)
