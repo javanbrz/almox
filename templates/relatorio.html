@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Movimentações</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Relatório de Movimentações de Saída</h2>
+
+        <!-- Filtros de pesquisa -->
+        <form method="GET" class="filters-form">
+            <div>
+                <label for="solicitante">Solicitante:</label>
+                <input type="text" name="solicitante" value="{{ solicitante }}">
+            </div>
+            <div>
+                <label for="epi_nome">Nome do EPI:</label>
+                <input type="text" name="epi_nome" value="{{ epi_nome }}">
+            </div>
+            <div>
+                <label for="data_inicio">Data de Início:</label>
+                <input type="date" name="data_inicio" value="{{ data_inicio }}">
+            </div>
+            <div>
+                <label for="data_fim">Data de Fim:</label>
+                <input type="date" name="data_fim" value="{{ data_fim }}">
+            </div>
+            <div class="btn-container">
+                <button type="submit">Aplicar Filtros</button>
+                <a href="{{ url_for('main.relatorio') }}">Limpar Filtros</a>
+            </div>
+        </form>
+
+        <!-- Tabela de Movimentações -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do EPI</th>
+                    <th>Solicitante</th>
+                    <th>Quantidade</th>
+                    <th>Data de Saída</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimentacoes %}
+                    <tr>
+                        <td>{{ mov.nome_epi }}</td>
+                        <td>{{ mov.solicitante }}</td>
+                        <td>{{ mov.quantidade }}</td>
+                        <td>{{ mov.data_saida.strftime('%d/%m/%Y') if mov.data_saida else 'Data inválida' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="btn-container">
+            <a href="{{ url_for('main.index') }}">Voltar</a>
+        </div>
+    </div>
+</body>
+</html>

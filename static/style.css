@@ -48,6 +48,26 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+.buttons a {
+    padding: 10px;
+    margin: 0 10px 0px 10px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    width: 30%;
+    box-sizing: border-box;
+    transition: background-color 0.3s;
+}
+.buttons a:hover {
+    background-color: #0056b3;
+}
 a {
     color: #007BFF;
     text-align: center;
@@ -116,7 +136,6 @@ th, td {
 th {
     background-color: #007BFF;
     color: white;
-    text-align: center;
 }
 .ordenacao {
     display: flex;
@@ -142,4 +161,61 @@ th {
 .ordenacao select:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+/* Estilo para o formulário de filtros */
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+.filters-form label {
+    margin-right: 5px;
+    color: #555;
+}
+.filters-form input, .filters-form select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 180px;
+    margin-bottom: 10px;
+}
+/* Estilo para botões */
+.btn-container {
+    font-size: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.btn-container a, .btn-container button {
+    font-size: 16px;
+    padding: 10px 20px !important;
+    margin-top: 0;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn-container a:hover, .btn-container button:hover {
+    background-color: #0056b3;
+}
+/* Alinhamento de tabelas responsivo */
+@media (max-width: 600px) {
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters-form input, .filters-form select {
+        width: 100%;
+    }
+
+    .btn-container {
+        flex-direction: column;
+    }
 }
