@@ -16,7 +16,6 @@
             <a href="{{ url_for('main.controle_saida') }}">Saídas</a>
             <a href="{{ url_for('main.relatorio') }}">Relatórios</a>
             <a href="{{ url_for('main.logout') }}" class="sair">Logout</a>
-            <a href="{{ url_for('main.logout') }}">Logout</a>
         </div>
 
         <h3>Últimas saídas:</h3>
@@ -37,10 +36,6 @@
                         <td>{{ mov.solicitante }}</td>
                         <td>{{ mov.data_saida.strftime('%d/%m/%Y') if mov.data_saida else 'Data inválida' }}</td>
                         <td>{{ mov.nome_epi }}</td>  <!-- Nome do EPI relacionado -->
-                        <td>{{ epi.nome }}</td>
-                        <td>{{ epi.descricao }}</td>
-                        <td>{{ epi.quantidade }}</td>
-                        <td>{{ epi.data_validade.strftime('%d/%m/%Y') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
